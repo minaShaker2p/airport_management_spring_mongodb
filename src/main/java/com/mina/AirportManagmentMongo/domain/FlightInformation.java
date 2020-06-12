@@ -4,6 +4,7 @@ package com.mina.AirportManagmentMongo.domain;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 
 @Setter
 @Getter
+@ToString(exclude = {"internalId","airCraft","createdAt"})
 @Document("flights")
 @NoArgsConstructor
 public class FlightInformation {
