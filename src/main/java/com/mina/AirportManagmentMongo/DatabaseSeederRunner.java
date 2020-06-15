@@ -57,7 +57,7 @@ public class DatabaseSeederRunner implements CommandLineRunner {
                 72229723);
         Airport copenhagen = new Airport(
                 "7ed990d2-6471-485d-931e-c77729dc0f25",
-                "Copenhagen Airport",
+                "Bauland",
                 "Copenhagen",
                 30298531);
 
@@ -82,9 +82,9 @@ public class DatabaseSeederRunner implements CommandLineRunner {
         flightTwo.setDurationMin(600);
         flightTwo.setAircraft(new Aircraft("747", 300));
 
-        // Seed
-        List<Airport> airports = Arrays.asList(rome, paris, copenhagen);
-        airportRepository.insert(airports);
+//        // Seed
+//        List<Airport> airports = Arrays.asList(rome, paris, copenhagen);
+//        airportRepository.insert(airports);
 
         List<FlightInformation> flights = Arrays.asList(flightOne, flightTwo);
         flightInformationRepository.insert(flights);
