@@ -15,7 +15,7 @@ public interface FlightInformationRepository extends MongoRepository<FlightInfor
     @Query("{'aircraft.nbSeats' : {$gte : ?0}}")
     List<FlightInformation> findByMinAircraftNbSeats(int minNbSeats);
 
-
+    @Query("{'departure.$city' : ?0}")
     List<FlightInformation> findByDepartureCity(String departure);
 
 }
