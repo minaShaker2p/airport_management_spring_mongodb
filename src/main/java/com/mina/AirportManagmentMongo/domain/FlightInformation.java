@@ -8,6 +8,7 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 
 @Setter
 @Getter
-@ToString(exclude = {"internalId","airCraft","createdAt"})
+@ToString(exclude = {"internalId", "airCraft", "createdAt"})
 @Document("flights")
 @NoArgsConstructor
 public class FlightInformation {
@@ -26,10 +27,12 @@ public class FlightInformation {
     private String internalId;
 
     @Field("departure")
-    private String departureCity;
+    @DBRef
+    private Airport departureCity;
 
     @Field("destination")
-    private String destinationCity;
+    @DBRef
+    private Airport destinationCity;
     private FlightType flightType;
     private boolean isDelayed;
     @Field("duration")
@@ -42,8 +45,8 @@ public class FlightInformation {
 
     private String description;
 
-    public FlightInformation(String departureCity,
-                             String destinationCity,
+    public FlightInformation(Airport departureCity,
+                             Airport destinationCity,
                              FlightType flightType,
                              int durationMin,
                              LocalDate departureDate,

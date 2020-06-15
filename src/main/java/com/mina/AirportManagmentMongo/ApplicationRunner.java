@@ -1,8 +1,10 @@
 package com.mina.AirportManagmentMongo;
 
+import com.mina.AirportManagmentMongo.db.repository.AirportRepository;
 import com.mina.AirportManagmentMongo.db.repository.FlightInformationRepository;
+import com.mina.AirportManagmentMongo.domain.Airport;
 import com.mina.AirportManagmentMongo.domain.FlightInformation;
-import com.mina.AirportManagmentMongo.domain.FlightPrinter;
+import com.mina.AirportManagmentMongo.utils.FlightPrinter;
 import com.mina.AirportManagmentMongo.queries.FlightInformationQueries;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +26,21 @@ public class ApplicationRunner implements CommandLineRunner {
     @Autowired
     private FlightInformationRepository repository;
 
+    @Autowired
+    private AirportRepository airportRepository;
+
 
     @Override
     public void run(String... args) throws Exception {
+
+        Airport rome = airportRepository.findById("1d1aab22-670b-48cb-a027-721e2055731f").get();
+        rome.setName("Leonardo da vinci (Fiumicino)");
+        airportRepository.save(rome);
+        System.out.println("--> AFTER UPDATE TO ROME AIRPORT");
+        List<FlightInformation> flights= repository.findAll();
+        FlightPrinter.print(flights);
+
+
 
         printFlightById("5ee74c19e32cff0f3c98f776");
 
