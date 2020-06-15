@@ -32,18 +32,21 @@ public class FlightInformation {
     private String destinationCity;
     private FlightType flightType;
     private boolean isDelayed;
+    @Field("duration")
     private int durationMin;
     private LocalDate departureDate;
-    private AirCraft airCraft;
+    private Aircraft airCraft;
     @Transient
     private LocalDate createdAt;
+
+    private String description;
 
     public FlightInformation(String departureCity,
                              String destinationCity,
                              FlightType flightType,
                              int durationMin,
                              LocalDate departureDate,
-                             AirCraft airCraft) {
+                             Aircraft airCraft) {
         this.departureCity = departureCity;
         this.destinationCity = destinationCity;
         this.flightType = flightType;

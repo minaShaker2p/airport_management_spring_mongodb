@@ -6,20 +6,33 @@ import com.mina.AirportManagmentMongo.queries.FlightInformationQueries;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
+import org.springframework.core.annotation.Order;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 @RequiredArgsConstructor
+@Order(2)
 public class ApplicationRunner implements CommandLineRunner {
 
     @Autowired
     private final FlightInformationQueries flightInformationQueries;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
 
     @Override
     public void run(String... args) throws Exception {
+
+        markAllFlightsToRomeAsDelayed();
+        removeFlightsWithDurationLssThanTwoHours();
+
         System.out.println("-----\nQUERY :find all flights  with paging and sorting");
         List<FlightInformation> allFLightsOrdered = this.flightInformationQueries
                 .findAll("departure", 0, 3);
@@ -32,7 +45,7 @@ public class ApplicationRunner implements CommandLineRunner {
         System.out.println(flightById);
 
 
-        System.out.println("------------------------------------------------------ \n");
+        System.out.println("-c----------------------------------------------------- \n");
         System.out.println("QUERY :Count all international flight ");
         Long count = this.flightInformationQueries
                 .countAllInternational();
@@ -59,6 +72,19 @@ public class ApplicationRunner implements CommandLineRunner {
         List<FlightInformation> flightsAtTimeByDeparture = this.flightInformationQueries.findRelatedToCityAndNotDelayed("Leipzig");
         FlightPrinter.print(flightsAtTimeByDeparture);
 
+    }
+
+    public void markAllFlightsToRomeAsDelayed() {
+        Query departingFromRome = Query.query(Criteria.where("destination").is("Copenhagen"));
+
+        Update setDelayed = Update.update("isDelayed", true);
+
+        this.mongoTemplate.updateMulti(departingFromRome, setDelayed, FlightInformation.class);
+    }
+
+    public void removeFlightsWithDurationLssThanTwoHours() {
+        Query lessThanTwoHours = Query.query(Criteria.where("duration").lt(120));
+        mongoTemplate.findAllAndRemove(lessThanTwoHours, FlightInformation.class);
 
     }
 }
