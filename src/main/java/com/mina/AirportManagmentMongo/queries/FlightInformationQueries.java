@@ -59,7 +59,8 @@ public class FlightInformationQueries {
     //4) find all flights by departure city.
 
     public List<FlightInformation> findByDeparture(String departure) {
-        Query byDeparture = Query.query(Criteria.where("departure")
+
+        Query byDeparture = Query.query(Criteria.where("departure.city")
                 .is(departure));
 
         return this.mongoTemplate.find(byDeparture, FlightInformation.class);
@@ -68,7 +69,7 @@ public class FlightInformationQueries {
     //5) find all flights by duration between min and max
 
     public List<FlightInformation> findByDurationMinAndMax(int minMinutes, int maxMinutes) {
-        Query byDurationMinAndMax = Query.query(Criteria.where("durationMin")
+        Query byDurationMinAndMax = Query.query(Criteria.where("duration")
                 .gte(minMinutes)
                 .lte(maxMinutes));
 
@@ -79,14 +80,14 @@ public class FlightInformationQueries {
 
     public List<FlightInformation> findDelayedAtDeparture(String departure) {
         Query delayedAtDeparture = Query.query(Criteria.where("isDelayed")
-                .is(true).andOperator(Criteria.where("departure").is(departure)));
+                .is(true).andOperator(Criteria.where("departure.city").is(departure)));
         return mongoTemplate.find(delayedAtDeparture, FlightInformation.class);
     }
 
     //  7) find all flights that on time  and relate to a city.
     public List<FlightInformation> findRelatedToCityAndNotDelayed(String city) {
-        Query byCity = Query.query(new Criteria().orOperator(Criteria.where("departure").is(city),
-                Criteria.where("destination").is(city))
+        Query byCity = Query.query(new Criteria().orOperator(Criteria.where("departure.city").is(city),
+                Criteria.where("destination.city").is(city))
                 .andOperator(Criteria.where("isDelayed").is(false)));
         return this.mongoTemplate.find(byCity, FlightInformation.class);
     }

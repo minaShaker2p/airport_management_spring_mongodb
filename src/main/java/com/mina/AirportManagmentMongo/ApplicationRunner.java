@@ -73,12 +73,12 @@ public class ApplicationRunner implements CommandLineRunner {
 
         System.out.println("------------------------------------------------------ \n");
         System.out.println("QUERY :find all flights by duration between min and max ");
-        List<FlightInformation> flightsByDuration = this.flightInformationQueries.findByDurationMinAndMax(2, 4);
+        List<FlightInformation> flightsByDuration = this.flightInformationQueries.findByDurationMinAndMax(20, 700);
         FlightPrinter.print(flightsByDuration);
 
         System.out.println("------------------------------------------------------ \n");
         System.out.println("QUERY :find all flights by departure cit ");
-        List<FlightInformation> flightsByDeparture = this.flightInformationQueries.findByDeparture("Leipzig");
+        List<FlightInformation> flightsByDeparture = this.repository.findByDepartureCity("Rome");
         FlightPrinter.print(flightsByDeparture);
 
         System.out.println("------------------------------------------------------ \n");
@@ -88,7 +88,7 @@ public class ApplicationRunner implements CommandLineRunner {
 
         System.out.println("------------------------------------------------------ \n");
         System.out.println("QUERY :find all flights that on time  and relate to a city");
-        List<FlightInformation> flightsAtTimeByDeparture = this.flightInformationQueries.findRelatedToCityAndNotDelayed("Leipzig");
+        List<FlightInformation> flightsAtTimeByDeparture = this.flightInformationQueries.findRelatedToCityAndNotDelayed("Rome");
         FlightPrinter.print(flightsAtTimeByDeparture);
 
     }
