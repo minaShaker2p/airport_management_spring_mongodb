@@ -35,7 +35,8 @@ public class FlightInformation {
     @Field("duration")
     private int durationMin;
     private LocalDate departureDate;
-    private Aircraft airCraft;
+
+    private Aircraft aircraft;
     @Transient
     private LocalDate createdAt;
 
@@ -52,6 +53,6 @@ public class FlightInformation {
         this.flightType = flightType;
         this.durationMin = durationMin;
         this.departureDate = departureDate;
-        this.airCraft = airCraft;
+        this.aircraft = airCraft;
     }
 }

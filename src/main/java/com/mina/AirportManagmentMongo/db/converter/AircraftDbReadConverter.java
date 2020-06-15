@@ -1,4 +1,4 @@
-package com.mina.AirportManagmentMongo.db;
+package com.mina.AirportManagmentMongo.db.converter;
 
 import com.mina.AirportManagmentMongo.domain.Aircraft;
 import org.springframework.context.annotation.Bean;

@@ -1,5 +1,6 @@
 package com.mina.AirportManagmentMongo;
 
+import com.mina.AirportManagmentMongo.db.repository.FlightInformationRepository;
 import com.mina.AirportManagmentMongo.domain.FlightInformation;
 import com.mina.AirportManagmentMongo.domain.FlightPrinter;
 import com.mina.AirportManagmentMongo.queries.FlightInformationQueries;
@@ -7,12 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -24,14 +22,21 @@ public class ApplicationRunner implements CommandLineRunner {
     private final FlightInformationQueries flightInformationQueries;
 
     @Autowired
-    private MongoTemplate mongoTemplate;
+    private FlightInformationRepository repository;
 
 
     @Override
     public void run(String... args) throws Exception {
 
-        markAllFlightsToRomeAsDelayed();
-        removeFlightsWithDurationLssThanTwoHours();
+        printFlightById("5ee74c19e32cff0f3c98f776");
+
+        delayFlight("5ee74c19e32cff0f3c98f776", 30);
+
+        removeFlight("5ee74c19e32cff0f3c98f776");
+
+        printByDepartureAndDestination("Bucharest", "Rome");
+
+        printByMinNbSeats(200);
 
         System.out.println("-----\nQUERY :find all flights  with paging and sorting");
         List<FlightInformation> allFLightsOrdered = this.flightInformationQueries
@@ -74,17 +79,54 @@ public class ApplicationRunner implements CommandLineRunner {
 
     }
 
-    public void markAllFlightsToRomeAsDelayed() {
-        Query departingFromRome = Query.query(Criteria.where("destination").is("Copenhagen"));
-
-        Update setDelayed = Update.update("isDelayed", true);
-
-        this.mongoTemplate.updateMulti(departingFromRome, setDelayed, FlightInformation.class);
+    private void removeFlight(String id) {
+        repository.deleteById(id);
+        System.out.println("Deleted Flight " + id);
     }
 
-    public void removeFlightsWithDurationLssThanTwoHours() {
-        Query lessThanTwoHours = Query.query(Criteria.where("duration").lt(120));
-        mongoTemplate.findAllAndRemove(lessThanTwoHours, FlightInformation.class);
+    private void delayFlight(String id, int duration) {
 
+        if(repository.findById(id).isPresent())
+        {
+            // first find flight
+            FlightInformation flight = repository.findById(id).get();
+            // update flight  duration info
+            flight.setDurationMin(flight.getDurationMin() + duration);
+
+            // then save the updated flight
+            repository.save(flight);
+
+            System.out.println("Updated flight " + id + "\n");
+        }
+
+    }
+
+    /**
+     * Method which print flight information based on specific id
+     *
+     * @param id
+     */
+    private void printFlightById(String id) {
+        System.out.println("Flight " + id);
+        if (repository.findById(id).isPresent()) {
+            FlightInformation flight = repository.findById(id).get();
+            FlightPrinter.print(Arrays.asList(flight));
+        }
+    }
+
+
+    private void printByDepartureAndDestination(String departure, String destination) {
+        System.out.println("Fights From " + departure + " to " + destination);
+
+        List<FlightInformation> flights = repository.findByDepartureCityAndDestinationCity(departure, destination);
+
+        FlightPrinter.print(flights);
+    }
+
+    private void printByMinNbSeats(int minNbSeats) {
+        System.out.println("Flights by min nb seats " + minNbSeats);
+
+        List<FlightInformation> flights = repository.findByMinAircraftNbSeats(minNbSeats);
+        FlightPrinter.print(flights);
     }
 }
